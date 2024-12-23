@@ -105,16 +105,16 @@ namespace BRMS
                 string pdtNumber = resultRow["pdt_number"].ToString();
                 string pdtNameKr = resultRow["pdt_name_kr"].ToString();
                 string pdtNameEn = resultRow["pdt_name_en"].ToString();
-                decimal pdtBprice = cUIManager.ConvertToDecimal(resultRow["pdt_bprice"].ToString());
-                int pdtPriceKrw = cUIManager.ConvertToInt(resultRow["pdt_sprice_krw"].ToString());
-                decimal pdtPriceUsd = cUIManager.ConvertToDecimal(resultRow["pdt_sprice_usd"].ToString());
-                decimal pdtWidth = cUIManager.ConvertToDecimal(resultRow["pdt_width"].ToString());
-                decimal pdtLength = cUIManager.ConvertToDecimal(resultRow["pdt_length"].ToString());
-                decimal pdtHigth = cUIManager.ConvertToDecimal(resultRow["pdt_height"].ToString());
-                decimal pdtWeigth = cUIManager.ConvertToDecimal(resultRow["pdt_weight"].ToString());
-                int pdtStatus = cUIManager.ConvertToInt(resultRow["pdt_status"].ToString());
-                int pdtTax = cUIManager.ConvertToInt(resultRow["pdt_tax"].ToString());
-                int pdtStock = cUIManager.ConvertToInt(resultRow["pdt_stock"].ToString());
+                decimal pdtBprice = cDataHandler.ConvertToDecimal(resultRow["pdt_bprice"]);
+                int pdtPriceKrw = cDataHandler.ConvertToInt(resultRow["pdt_sprice_krw"]);
+                decimal pdtPriceUsd = cDataHandler.ConvertToDecimal(resultRow["pdt_sprice_usd"]);
+                decimal pdtWidth = cDataHandler.ConvertToDecimal(resultRow["pdt_width"]);
+                decimal pdtLength = cDataHandler.ConvertToDecimal(resultRow["pdt_length"]);
+                decimal pdtHigth = cDataHandler.ConvertToDecimal(resultRow["pdt_height"]);
+                decimal pdtWeigth = cDataHandler.ConvertToDecimal(resultRow["pdt_weight"]);
+                int pdtStatus = cDataHandler.ConvertToInt(resultRow["pdt_status"]);
+                int pdtTax = cDataHandler.ConvertToInt(resultRow["pdt_tax"]);
+                int pdtStock = cDataHandler.ConvertToInt(resultRow["pdt_stock"]);
 
                 tBoxProductNumber.Text =    pdtNumber;
                 tBoxProductName_kr.Text =   pdtNameKr;
@@ -149,13 +149,14 @@ namespace BRMS
                 //GetCategory(code);
                 GetCategoryInfo(pdtTop, pdtMid, pdtBot);
                 this.Text = "제품 정보 조회";
-                OrigenaDate();
+                RegisterOriginalData();
             }
         }
         /// <summary>
-        /// 원본 데이터 백업
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용
         /// </summary>
-        private void OrigenaDate()
+        private void RegisterOriginalData()
         {
             originalValues["@pdtName_kr"] = tBoxProductName_kr.Text;
             originalValues["@pdtName_en"] = tBoxProductName_en.Text;
@@ -319,8 +320,8 @@ namespace BRMS
         /// <param name="e"></param>
         private void UsdToKrwExchange(object sener, KeyEventArgs e)
         {
-            
-            cUIManager.AllowDecimalTwoPlaces(sener, e, tBoxPriceUsd);
+
+            cDataHandler.AllowDecimalTwoPlaces(sener, e, tBoxPriceUsd);
             if (!string.IsNullOrWhiteSpace(tBoxPriceUsd.Text))
             {
                 tBoxPriceKrw.Text = (double.Parse(tBoxPriceUsd.Text) * exChange).ToString();
@@ -345,7 +346,7 @@ namespace BRMS
         private void KrwToUsdExchange(object sener, KeyEventArgs e)
         {
             
-            cUIManager.AllowOnlyInteger(sener, e, tBoxPriceKrw);
+            cDataHandler.AllowOnlyInteger(sener, e, tBoxPriceKrw);
             if (!string.IsNullOrWhiteSpace(tBoxPriceKrw.Text))
             {
                 tBoxPriceUsd.Text = (double.Parse(tBoxPriceKrw.Text)  / exChange).ToString();
@@ -366,8 +367,8 @@ namespace BRMS
         /// <param name="e"></param>
         private void tBoxMargin_KeyUp(object sender, KeyEventArgs e)
         {
-            
-            cUIManager.AllowDecimalTwoPlaces(sender, e, tBoxMargin);
+
+            cDataHandler.AllowDecimalTwoPlaces(sender, e, tBoxMargin);
             if(Convert.ToDecimal(tBoxMargin.Text) >= 100  )
             {
                 cUIManager.ShowMessageBox("99.99 이하로만 입력이 가능합니다", "알림", MessageBoxButtons.OK);

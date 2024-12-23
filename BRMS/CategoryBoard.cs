@@ -212,10 +212,10 @@ namespace BRMS
         private void bntTopCategoryModify_Click(object sender, EventArgs e)
         {
             int row = DgrTopCategory.Dgr.CurrentRow.Index;
-            string topCode = DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value.ToString();
-            string midCode = "0";
-            string botCode = "0";
-            categoryEdit.GetCategoryinfo(topCode, midCode, botCode, 1);
+            int topCode = cDataHandler.ConvertToInt(DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value);
+            int midCode = 0;
+            int botCode = 0;
+            categoryEdit.GetCategoryinfo(topCode, midCode, botCode, false);
             CallCategoryEditFrom();
             GetTopCategoryInfo();
         }
@@ -224,10 +224,10 @@ namespace BRMS
         {
             if (DgrMidCategory.Dgr.RowCount > 0)
             {
-                string topCode = DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value.ToString();
-                string midCode = DgrMidCategory.Dgr.CurrentRow.Cells["catMid"].Value.ToString();
-                string botCode = "0";
-                categoryEdit.GetCategoryinfo(topCode, midCode, botCode, 1);
+                int topCode = cDataHandler.ConvertToInt(DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value);
+                int midCode = cDataHandler.ConvertToInt(DgrMidCategory.Dgr.CurrentRow.Cells["catMid"].Value);
+                int botCode = 0;
+                categoryEdit.GetCategoryinfo(topCode, midCode, botCode, false);
                 CallCategoryEditFrom();
                 GetMidCategoryInfo();
             }
@@ -241,10 +241,10 @@ namespace BRMS
         {
             if (DgrBotCategory.Dgr.RowCount > 0)
             {
-                string topCode = DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value.ToString();
-                string midCode = DgrMidCategory.Dgr.CurrentRow.Cells["catMid"].Value.ToString();
-                string botCode = DgrBotCategory.Dgr.CurrentRow.Cells["catBot"].Value.ToString();
-                categoryEdit.GetCategoryinfo(topCode, midCode, botCode, 1);
+                int topCode = cDataHandler.ConvertToInt(DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value);
+                int midCode = cDataHandler.ConvertToInt(DgrMidCategory.Dgr.CurrentRow.Cells["catMid"].Value);
+                int botCode = cDataHandler.ConvertToInt(DgrBotCategory.Dgr.CurrentRow.Cells["catBot"].Value);
+                categoryEdit.GetCategoryinfo(topCode, midCode, botCode, false);
                 CallCategoryEditFrom();
                 GetBotCategoryInfo();
             }
@@ -256,32 +256,32 @@ namespace BRMS
 
         private void bntTopCategoryAdd_Click(object sender, EventArgs e)
         {
-            string topCode = "0";
-            string midCode = "0";
-            string botCode = "0";
-            categoryEdit.GetCategoryinfo(topCode, midCode, botCode, 0);
+            int topCode = 0;
+            int midCode = 0;
+            int botCode = 0;
+            categoryEdit.GetCategoryinfo(topCode, midCode, botCode, true);
             CallCategoryEditFrom();
             GetTopCategoryInfo();
         }
 
         private void bntMidCategoryAdd_Click(object sender, EventArgs e)
         {
-            string topCode = DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value.ToString();
-            string midCode = "0";
-            string botCode = "0";
-            categoryEdit.GetCategoryinfo(topCode, midCode, botCode, 0);
+            int topCode = cDataHandler.ConvertToInt(DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value);
+            int midCode = 0;
+            int botCode = 0;
+            categoryEdit.GetCategoryinfo(topCode, midCode, botCode, true);
             CallCategoryEditFrom();
             GetMidCategoryInfo();
         }
 
         private void bntBotCategoryAdd_Click(object sender, EventArgs e)
         {
-            string topCode = DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value.ToString();
-            string midCode = DgrMidCategory.Dgr.CurrentRow.Cells["catMid"].Value.ToString();
-            string botCode = "0";
-            if (!string.IsNullOrEmpty(topCode) || !string.IsNullOrEmpty(midCode))
+            int topCode = cDataHandler.ConvertToInt(DgrTopCategory.Dgr.CurrentRow.Cells["catTop"].Value);
+            int midCode = cDataHandler.ConvertToInt(DgrMidCategory.Dgr.CurrentRow.Cells["catMid"].Value);
+            int botCode = 0;
+            if (topCode != 0 || midCode != 0)
             {
-                categoryEdit.GetCategoryinfo(topCode, midCode, botCode, 0);
+                categoryEdit.GetCategoryinfo(topCode, midCode, botCode, true);
                 CallCategoryEditFrom();
             }
             GetBotCategoryInfo();

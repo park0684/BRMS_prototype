@@ -206,9 +206,14 @@ namespace BRMS
             bntDelete.Visible = true;
             paymentCode = getPaymentCode;
             purchaseCode = Convert.ToInt32(dataRow["pay_purcode"]);
-            OrigenaDate();
+            RegisterOriginalData();
         }
-        private void OrigenaDate()
+
+        /// <summary>
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용
+        /// </summary>
+        private void RegisterOriginalData()
         {
             originalValues["@payCash"] = tBoxCashPayment.Text;
             originalValues["@payTransfer"] = tBoxAccuntTransfer.Text;

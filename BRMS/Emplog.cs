@@ -22,7 +22,7 @@ namespace BRMS
             InitializeComponent();
             pnlDataGrid.Controls.Add(dgrLog.Dgr);
             dgrLog.Dgr.Dock = DockStyle.Fill;
-            ParameterSet();
+            parameter = cLog.GetFilteredParameters(800, 900);// 로그 파라미터 받아오기
             combBoxSetting();
             DataGridFrom();
         }
@@ -44,16 +44,6 @@ namespace BRMS
             dgrLog.FormatAsStringCenter("logName", "logEmpCode", "logEmpName", "logEmp");
         }
 
-        private void ParameterSet()
-        {
-            foreach (var entry in cLog.logParameter)
-            {
-                if (entry.Value.typeCode >= 800 && entry.Value.typeCode < 900)
-                {
-                    parameter[entry.Key] = entry.Value;
-                }
-            }
-        }
         private void combBoxSetting()
         {
             cmBoxWorkType.Items.Add("전체");

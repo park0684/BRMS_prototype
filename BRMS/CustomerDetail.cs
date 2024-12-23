@@ -16,12 +16,14 @@ namespace BRMS
         cDatabaseConnect dbconn = new cDatabaseConnect();
         cDataGridDefaultSet custOrder = new cDataGridDefaultSet();
         cDataGridDefaultSet custSale = new cDataGridDefaultSet();
+        cDataGridDefaultSet custLog = new cDataGridDefaultSet();
         DataTable resultTable = new DataTable();
         int custCode = 0;
         int ccustStatus = 1;
         int workType = 0; // 0 등록, 1 기존회원 조회
         Dictionary<string, object> originalValues = new Dictionary<string, object>();
         Dictionary<int, string> accessPermission = new Dictionary<int, string>();
+        static Dictionary<string, (int typeCode, string typeString)> parameter = new Dictionary<string, (int, string)>();
         int accessedEmp = 1;
         public CustomerDetail()
         {
@@ -30,33 +32,27 @@ namespace BRMS
             InitializeComboBox();
             InitalizeLable();
             InitializeDateTimePicker();
-            panelOrderDataGrid.Controls.Add(custOrder.Dgr);
-            custOrder.Dgr.Dock = DockStyle.Fill;
-            panelSaleDataGrid.Controls.Add(custSale.Dgr);
-            custSale.Dgr.Dock = DockStyle.Fill;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            ControlBox = false;
+            cUIManager.ApplyFormStyle(this);
             MaximizeBox = false;
             custOrder.CellDoubleClick += custOrder_DuobleClick;
             GridForm();
             tBoxTell.KeyUp += tBoxTell_keyup;
             tBoxCell.KeyUp += tBoxCell_keyup;
+            parameter = cLog.GetFilteredParameters(700, 800);
         }
         private void InitializeTabControl()
         {
-            // TabControl에 접근하여 페이지 이름 설정
             tabCtrlCustomer.TabPages[0].Text = "회원정보"; 
             tabCtrlCustomer.TabPages[1].Text = "주문내역"; 
             tabCtrlCustomer.TabPages[2].Text = "판매내역";
             tabCtrlCustomer.TabPages[3].Text = "주요제품";
+            tabCtrlCustomer.TabPages[4].Text = "변경로그";
 
         }
        
         private void InitializeComboBox()
         {
             cmBoxStatus.DropDownStyle = ComboBoxStyle.DropDownList;
-            //cmBoxStatus.Items.AddRange(new string[]{"무효", "유효"});
-            //cmBoxStatus.SelectedIndex = 1;
             foreach (var status in cStatusCode.CustomerStatus)
             {
                 cmBoxStatus.Items.Add(status.Value); // 상태 문자열 추가
@@ -105,6 +101,13 @@ namespace BRMS
         /// </summary>
         private void GridForm()
         {
+            panelOrderDataGrid.Controls.Add(custOrder.Dgr);
+            custOrder.Dgr.Dock = DockStyle.Fill;
+            panelSaleDataGrid.Controls.Add(custSale.Dgr);
+            custSale.Dgr.Dock = DockStyle.Fill;
+            pnlLogDataGrid.Controls.Add(custLog.Dgr);
+            custLog.Dgr.Dock = DockStyle.Fill;
+
             custOrder.Dgr.Columns.Add("custOrderCode", "주문코드");
             custOrder.Dgr.Columns.Add("custOrderStatus", "상태");
             custOrder.Dgr.Columns.Add("custOrderDate", "주문일");
@@ -135,6 +138,18 @@ namespace BRMS
             custSale.Dgr.ReadOnly = true;
             custSale.Dgr.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             custSale.ApplyDefaultColumnSettings();
+
+            custLog.Dgr.Columns.Add("logType", "작업내역");
+            custLog.Dgr.Columns.Add("logBefore", "변경전");
+            custLog.Dgr.Columns.Add("logAfter", "변경후");
+            custLog.Dgr.Columns.Add("logEmp", "작업자");
+            custLog.Dgr.Columns.Add("logDate", "변경일");
+            custLog.Dgr.ReadOnly = true;
+            custLog.ApplyDefaultColumnSettings();
+            custLog.Dgr.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            custLog.FormatAsDateTime("logDate");
+            custLog.FormatAsStringLeft( "logType", "logBefore", "logAfter");
+            custLog.FormatAsStringCenter("logEmp", "logParam");
 
         }
         /// <summary>
@@ -169,11 +184,11 @@ namespace BRMS
         }
         private void tBoxTell_keyup(object sender, KeyEventArgs e)
         {
-            cUIManager.AllowPhoneNumber(sender, e, tBoxTell);
+            cDataHandler.AllowPhoneNumber(sender, e, tBoxTell);
         }
         private void tBoxCell_keyup(object sender, KeyEventArgs e)
         {
-            cUIManager.AllowPhoneNumber(sender, e, tBoxCell);
+            cDataHandler.AllowPhoneNumber(sender, e, tBoxCell);
         }
         /// <summary>
         /// 선택된 회원정보 표시
@@ -184,7 +199,7 @@ namespace BRMS
             custCode = custmerCode;
             workType = 1;
             var cryptor = new cCryptor("shared-passphrase");
-            string query = "SELECT cust_name, cust_country, cust_tell, cust_cell, cust_email, cust_addr, cust_status, cust_idate, cust_udate, cust_lastsaledate, cust_memo,cust_key1, cust_key2 FROM customer WHERE cust_code = " + custmerCode;
+            string query = "SELECT cust_name, cust_country, cust_tell, cust_cell, cust_email, cust_addr, cust_status, cust_idate, cust_udate, cust_lastsaledate, cust_memo,cust_key1, cust_key2, cust_point FROM customer WHERE cust_code = " + custmerCode;
             
             dbconn.SqlReaderQuery(query, resultTable);
             DataRow row = resultTable.Rows[0];
@@ -193,7 +208,7 @@ namespace BRMS
             string key1 = row["cust_key1"].ToString();
             string custCell = row["cust_cell"].ToString();
             string key2 = row["cust_key2"].ToString();
-
+            int point = cDataHandler.ConvertToInt(row["cust_point"]);
             // cust_tell 복호화
             if (!string.IsNullOrEmpty(custTell) && !string.IsNullOrEmpty(key1))
             {
@@ -214,7 +229,7 @@ namespace BRMS
             SetTextBoxHelper(tBoxCell, custCell);
             SetTextBoxHelper(tBoxAddress, row["cust_addr"]);
             SetTextBoxHelper(tBoxMemo, row["cust_memo"]);
-
+            lblCustPoint.Text = point.ToString("#,##0");
             lblRegDate.Text = GetDateFormatHelper(row["cust_idate"]);
             lblUpdate.Text = GetDateFormatHelper(row["cust_udate"]);
             lblSaleDate.Text = GetDateFormatHelper(row["cust_lastsaledate"]);
@@ -224,9 +239,13 @@ namespace BRMS
             cmBoxStatus.SelectedIndex = row["cust_status"] != DBNull.Value ? Convert.ToInt32(row["cust_status"]) : 0;
             cmBoxStatus.Tag = cmBoxStatus.SelectedIndex;
             ccustStatus = Convert.ToInt32(row["cust_status"]);
-            OrigenaDate();
+            RegisterOriginalData();
         }
-        private void OrigenaDate()
+        /// <summary>
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용
+        /// </summary>
+        private void RegisterOriginalData()
         {
             originalValues["@custName"] = tBoxCustName.Text;
             originalValues["@custTell"] = tBoxTell.Text;
@@ -299,7 +318,67 @@ namespace BRMS
 
             }
         }
+        private void LogSearchQuery()
+        {
+            string fromDate = dtpLogDateFrom.Value.ToString("yyyy-MM-dd");
+            string toDate = dtpLogDateTo.Value.AddDays(1).ToString("yyyy-MM-dd");
+            DataTable resultData = new DataTable();
+            string query = $"SELECT custlog_type, custlog_before, custlog_after, custlog_emp, custlog_date FROM customerlog WHERE custlog_date > '{fromDate}' AND custlog_date < '{toDate}' AND custlog_param = {custCode} ORDER BY custlog_date";
 
+            dbconn.SqlDataAdapterQuery(query, resultData);
+            LoadCustLog(resultData);
+        }
+        private void LoadCustLog(DataTable dataTable)
+        {
+            custLog.Dgr.Rows.Clear();
+            foreach (DataRow row in dataTable.Rows)
+            {
+                DataTable readData = new DataTable();
+                object resultObj = new object();
+
+                string query = $"SELECT emp_name FROM employee WHERE emp_code = {row["custlog_emp"]}";
+                dbconn.sqlScalaQuery(query, out resultObj);
+                string empName = resultObj.ToString();
+
+                int addRow = custLog.Dgr.Rows.Add();
+                // 로그 데이터 설정
+                string before = row["custlog_before"].ToString();
+                string after = row["custlog_after"].ToString();
+                switch (Convert.ToInt32(row["custlog_type"]))
+                {
+                    case 706://국가
+                        query = $"SELECT ctry_name FROM country WHERE ctry_code = {before}";
+                        dbconn.sqlScalaQuery(query, out resultObj);
+                        before = resultObj.ToString();
+                        query = $"SELECT ctry_name FROM country WHERE ctry_code = {after}";
+                        dbconn.sqlScalaQuery(query, out resultObj);
+                        after = resultObj.ToString();
+                        break;
+                    case 707://회원상태
+                        before = cStatusCode.GetCustomerStatus(Convert.ToInt32(before));
+                        after = cStatusCode.GetCustomerStatus(Convert.ToInt32(after));
+                        break;
+                }
+
+                string empCode = row["custlog_emp"].ToString();
+                string logDate = Convert.ToDateTime(row["custlog_date"]).ToString("yyyy-MM-dd HH:mm");
+                string logType = "";
+
+                var typeInfo = parameter.Values.FirstOrDefault(x => x.typeCode == (int)row["custlog_type"]);
+                if (typeInfo.typeString != null)
+                {
+                    logType = typeInfo.typeString;  // 해당 typeString 값을 사용
+                }
+
+                // 해당 셀에 값 설정
+                custLog.Dgr.Rows[addRow].Cells["No"].Value = addRow + 1;
+                custLog.Dgr.Rows[addRow].Cells["logType"].Value = logType; 
+                custLog.Dgr.Rows[addRow].Cells["logBefore"].Value = before;
+                custLog.Dgr.Rows[addRow].Cells["logAfter"].Value = after;
+                custLog.Dgr.Rows[addRow].Cells["logEmp"].Value = empName + $"({empCode})";
+                custLog.Dgr.Rows[addRow].Cells["logDate"].Value = logDate;
+            }
+        }
         /// <summary>
         /// 새 고객 등록 쿼리
         /// </summary>
@@ -449,9 +528,9 @@ namespace BRMS
             Close();
         }
 
-        private void tabCtrlCustomer_SelectedIndexChanged(object sender, EventArgs e)
+        private void btnLogSearch_Click(object sender, EventArgs e)
         {
-
+            LogSearchQuery();
         }
     }
 }

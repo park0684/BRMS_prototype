@@ -15,23 +15,28 @@ namespace BRMS
     {
         cDatabaseConnect dbconn = new cDatabaseConnect();
         cDataGridDefaultSet DgrLog = new cDataGridDefaultSet();
+
         Dictionary<string, object> originalValues = new Dictionary<string, object>();
         Dictionary<int, int> employeePermission = new Dictionary<int, int>();
         Dictionary<int, string> accessPermission = new Dictionary<int, string>();
         DataTable permissionData = new DataTable();
         static Dictionary<string, (int typeCode, string typeString)> parameter = new Dictionary<string, (int, string)>();
+        
         int accessedEmp = 1;
         int empCode = 0;
         string empPassword = "";
         bool isNewEntry = false;
         bool errorCheck = false;
+        
         public EmployeeDetail()
         {
             InitializeComponent();
+            cUIManager.ApplyFormStyle(this);
             InitializeCombox();
             InitializeTabControl();
             
         }
+       
 
         private void InitializeCombox()
         {
@@ -93,9 +98,10 @@ namespace BRMS
             empPassword = row["emp_password"].ToString();
             LoadEmployeePermission(emp);
             DecryptPassword();
-            OrigenaDate();
+            RegisterOriginalData();
             DataGridFrom();
-            ParameterSet();
+            parameter = cLog.GetFilteredParameters(800, 900);// 로그 파라미터 받아오기
+            //ParameterSet();
         }
         /// <summary>
         /// 새 직원 등록시 신규직원 여부 확인하는 isNewEntry는 true로 전환하고
@@ -105,7 +111,13 @@ namespace BRMS
         {
             isNewEntry = true;
             tabCtrlEmployee.TabPages.Remove(tabPage2);
+            lblEmpCode.Visible = false;
+            lblRegDate.Visible = false;
+            lblUpdate.Visible = false;
         }
+        /// <summary>
+        /// 변경 로그 데이터 그리드 폼
+        /// </summary>
         private void DataGridFrom()
         {
             pnlDataGrid.Controls.Add(DgrLog.Dgr);
@@ -123,16 +135,10 @@ namespace BRMS
             DgrLog.FormatAsStringLeft("logType", "logBefore", "logAfter");
             DgrLog.FormatAsStringCenter("logEmpName", "logEmp");
         }
-        private void ParameterSet()
-        {
-            foreach (var entry in cLog.logParameter)
-            {
-                if (entry.Value.typeCode >= 800 && entry.Value.typeCode < 900)
-                {
-                    parameter[entry.Key] = entry.Value;
-                }
-            }
-        }
+
+        /// <summary>
+        /// 변경 로그 조회 쿼리 설정
+        /// </summary>
         private void QuerySetting()
         {
             string fromDate = dtpFrom.Value.ToString("yyyy-MM-dd");
@@ -142,6 +148,10 @@ namespace BRMS
             dbconn.SqlDataAdapterQuery(query, resultData);
             FillGrid(resultData);
         }
+        /// <summary>
+        /// 변경 로그 데이터 그리드 내용 삽입
+        /// </summary>
+        /// <param name="dataTable"></param>
         private void FillGrid(DataTable dataTable)
         {
             if (dataTable.Rows.Count < 1)
@@ -221,9 +231,10 @@ namespace BRMS
             }
         }
         /// <summary>
-        /// 호출된 직원의 정보를 originalValues 딕셔너리에 저장하여 수정시 비교
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용
         /// </summary>
-        private void OrigenaDate()
+        private void RegisterOriginalData()
         {
             originalValues["@empName"] = tBoxEmpName.Text;
             originalValues["@empLevel"] = tBoxLevel.Text;
@@ -233,6 +244,9 @@ namespace BRMS
             originalValues["@empMemo"] = tBoxMemo.Text;
             originalValues["@empPassword"] = empPassword;
         }
+        /// <summary>
+        /// 직원 비밀번호 복호화
+        /// </summary>
         private void DecryptPassword()
         {
             var cryptor = new cCryptor("shared-passphrase");
@@ -241,6 +255,9 @@ namespace BRMS
                 empPassword = cryptor.Decrypt(empPassword);
             }
         }
+        /// <summary>
+        /// 직원 비밀번호 암호화
+        /// </summary>
         private void EncryptPassword()
         {
             var cryptor = new cCryptor("shared-passphrase");
@@ -250,6 +267,11 @@ namespace BRMS
                 empPassword = cryptor.Encrypt(empPassword);
             }
         }
+        /// <summary>
+        /// 설정된 직원 권한 데이터 베이스 등록
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="transaction"></param>
         private void InsertPermisstionToData(SqlConnection connection, SqlTransaction transaction)
         {
             foreach (var kvp in employeePermission)
@@ -263,7 +285,7 @@ namespace BRMS
 
                 string before = existingRow != null ? existingRow["acper_status"].ToString() : "";
                 
-                if (existingRow == null)
+                if (existingRow == null)//기존 정보가 없다면 새로 등록
                 {
                     // If the key does not exist, INSERT new record
                     string insertQuery = $"INSERT INTO accpermission (acper_emp,acper_permission,acper_status,acper_idate,acper_udate)" +
@@ -276,7 +298,7 @@ namespace BRMS
                     };
                     dbconn.ExecuteNonQuery(insertQuery,connection,transaction,parameters);
                 }
-                else
+                else//기존 정보가 있다면 업데이트로 수정
                 {
                     // If the key exists, UPDATE the record
                     string updateQuery = "UPDATE accpermission SET acper_status = @status, acper_udate = GETDATE() WHERE acper_emp = @emp AND acper_permission = @param";

@@ -42,6 +42,8 @@ namespace BRMS
             this.tBoxEmail = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cmBoxStatus = new System.Windows.Forms.ComboBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.lblCustPoint = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label8 = new System.Windows.Forms.Label();
@@ -81,6 +83,12 @@ namespace BRMS
             this.dtpSaleDateFrom = new System.Windows.Forms.DateTimePicker();
             this.dtpSaleDateTo = new System.Windows.Forms.DateTimePicker();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.pnlLogDataGrid = new System.Windows.Forms.Panel();
+            this.btnLogSearch = new System.Windows.Forms.Button();
+            this.label22 = new System.Windows.Forms.Label();
+            this.dtpLogDateFrom = new System.Windows.Forms.DateTimePicker();
+            this.dtpLogDateTo = new System.Windows.Forms.DateTimePicker();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -90,6 +98,7 @@ namespace BRMS
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -194,6 +203,8 @@ namespace BRMS
             this.tableLayoutPanel3.Controls.Add(this.tBoxEmail, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.label1, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.cmBoxStatus, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label15, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lblCustPoint, 1, 2);
             this.tableLayoutPanel3.Location = new System.Drawing.Point(212, 20);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 3;
@@ -243,6 +254,29 @@ namespace BRMS
             this.cmBoxStatus.Name = "cmBoxStatus";
             this.cmBoxStatus.Size = new System.Drawing.Size(76, 20);
             this.cmBoxStatus.TabIndex = 3;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label15.Font = new System.Drawing.Font("맑은 고딕", 9F);
+            this.label15.Location = new System.Drawing.Point(3, 50);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(44, 28);
+            this.label15.TabIndex = 4;
+            this.label15.Text = "포인트";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblCustPoint
+            // 
+            this.lblCustPoint.AutoSize = true;
+            this.lblCustPoint.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCustPoint.Location = new System.Drawing.Point(53, 50);
+            this.lblCustPoint.Name = "lblCustPoint";
+            this.lblCustPoint.Size = new System.Drawing.Size(224, 28);
+            this.lblCustPoint.TabIndex = 5;
+            this.lblCustPoint.Text = "0";
+            this.lblCustPoint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox2
             // 
@@ -374,12 +408,12 @@ namespace BRMS
             this.tabCtrlCustomer.Controls.Add(this.tabPage2);
             this.tabCtrlCustomer.Controls.Add(this.tabPage3);
             this.tabCtrlCustomer.Controls.Add(this.tabPage4);
+            this.tabCtrlCustomer.Controls.Add(this.tabPage5);
             this.tabCtrlCustomer.Location = new System.Drawing.Point(12, 12);
             this.tabCtrlCustomer.Name = "tabCtrlCustomer";
             this.tabCtrlCustomer.SelectedIndex = 0;
             this.tabCtrlCustomer.Size = new System.Drawing.Size(522, 329);
             this.tabCtrlCustomer.TabIndex = 9;
-            this.tabCtrlCustomer.SelectedIndexChanged += new System.EventHandler(this.tabCtrlCustomer_SelectedIndexChanged);
             // 
             // tabPage1
             // 
@@ -693,6 +727,74 @@ namespace BRMS
             this.tabPage4.Text = "tabPage4";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.pnlLogDataGrid);
+            this.tabPage5.Controls.Add(this.btnLogSearch);
+            this.tabPage5.Controls.Add(this.label22);
+            this.tabPage5.Controls.Add(this.dtpLogDateFrom);
+            this.tabPage5.Controls.Add(this.dtpLogDateTo);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(514, 303);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "tabPage5";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // pnlLogDataGrid
+            // 
+            this.pnlLogDataGrid.Location = new System.Drawing.Point(6, 41);
+            this.pnlLogDataGrid.Name = "pnlLogDataGrid";
+            this.pnlLogDataGrid.Size = new System.Drawing.Size(502, 231);
+            this.pnlLogDataGrid.TabIndex = 20;
+            // 
+            // btnLogSearch
+            // 
+            this.btnLogSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLogSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(154)))), ((int)(((byte)(240)))));
+            this.btnLogSearch.FlatAppearance.BorderSize = 0;
+            this.btnLogSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLogSearch.Font = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.btnLogSearch.ForeColor = System.Drawing.Color.White;
+            this.btnLogSearch.Location = new System.Drawing.Point(433, 5);
+            this.btnLogSearch.Name = "btnLogSearch";
+            this.btnLogSearch.Size = new System.Drawing.Size(75, 30);
+            this.btnLogSearch.TabIndex = 19;
+            this.btnLogSearch.Text = "조회";
+            this.btnLogSearch.UseVisualStyleBackColor = false;
+            this.btnLogSearch.Click += new System.EventHandler(this.btnLogSearch_Click);
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(135, 13);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(14, 12);
+            this.label22.TabIndex = 18;
+            this.label22.Text = "~";
+            this.label22.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // dtpLogDateFrom
+            // 
+            this.dtpLogDateFrom.CalendarFont = new System.Drawing.Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.dtpLogDateFrom.Font = new System.Drawing.Font("맑은 고딕", 9F);
+            this.dtpLogDateFrom.Location = new System.Drawing.Point(6, 7);
+            this.dtpLogDateFrom.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.dtpLogDateFrom.Name = "dtpLogDateFrom";
+            this.dtpLogDateFrom.Size = new System.Drawing.Size(123, 23);
+            this.dtpLogDateFrom.TabIndex = 16;
+            // 
+            // dtpLogDateTo
+            // 
+            this.dtpLogDateTo.CalendarFont = new System.Drawing.Font("맑은 고딕", 9F);
+            this.dtpLogDateTo.Font = new System.Drawing.Font("맑은 고딕", 9F);
+            this.dtpLogDateTo.Location = new System.Drawing.Point(155, 7);
+            this.dtpLogDateTo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.dtpLogDateTo.Name = "dtpLogDateTo";
+            this.dtpLogDateTo.Size = new System.Drawing.Size(126, 23);
+            this.dtpLogDateTo.TabIndex = 17;
+            // 
             // CustomerDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -718,6 +820,8 @@ namespace BRMS
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -776,5 +880,13 @@ namespace BRMS
         private System.Windows.Forms.DateTimePicker dtpSaleDateFrom;
         private System.Windows.Forms.DateTimePicker dtpSaleDateTo;
         private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Panel pnlLogDataGrid;
+        private System.Windows.Forms.Button btnLogSearch;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.DateTimePicker dtpLogDateFrom;
+        private System.Windows.Forms.DateTimePicker dtpLogDateTo;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label lblCustPoint;
     }
 }

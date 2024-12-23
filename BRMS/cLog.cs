@@ -27,9 +27,8 @@ namespace BRMS
             ["@pdtHeight"] =        (112, "높이"),
             ["@pdtTax"] =           (113, "과면세"),
             //분류정보 변경150
-            ["@catTopName"] =       (151, "대분류명"),
-            ["@catMidName"] =       (152, "중분류명"),
-            ["@catBotName"] =       (153, "소분류명"),
+            ["@catNameKr"] =       (151, "분류명(한글)"),
+            ["@catNameEn"] =       (152, "분류명(영문)"),
             //공급사등록정보 200
             ["@supName"] =           (201, "공급사명"),
             ["@supBzNo"] =           (202, "사업자 번호"),
@@ -140,8 +139,8 @@ namespace BRMS
             ["@customerModify"] =       (920, "고객 수정"),
             ["@customerOrderSearch"] =  (921, "고객 주문 조회"),
             ["@customerSaleSearch"] =   (922, "고객 판매 조회"),
-            ["@customerLogSearch"] =    (622, "고객 변경로그 조회"),
-            ["@supplierSearch"]=        (623, "공급사 조회"),
+            ["@customerLogSearch"] =    (922, "고객 변경로그 조회"),
+            ["@supplierSearch"]=        (923, "공급사 조회"),
             ["@employeeSearch"] =       (940, "직원 조회"),
             ["@employeeRegisted"] =     (941, "직원 등록"),
             ["@employeeModify"] =       (942, "직원 수정"),
@@ -153,8 +152,22 @@ namespace BRMS
             ["@customerLogSearch"] =    (955, "회원 로그 조회"),
             ["@payDetailSearch"] =      (924, "결제상세 조회"),
             ["@purRegisted"]=           (925, "매입 등록"),
-            ["@purOrderRegisted"] =     (926, "발주 등록")
+            ["@purOrderRegisted"] =     (926, "발주 등록"),
+            ["@categoryRegist"] =       (927, "분류 등록"),
+            ["@categroyModify"] =       (928, "분류 수정")
         };
+        public static Dictionary<string, (int typeCode, string typeString)> GetFilteredParameters(int min, int max)
+        {
+            Dictionary<string, (int typeCode, string typeString)> parameters = new Dictionary<string, (int, string)>();
+            foreach (var entry in logParameter)
+            {
+                if (entry.Value.typeCode >= min && entry.Value.typeCode < max)
+                {
+                    parameters[entry.Key] = entry.Value;
+                }
+            }
+            return parameters;
+        }
         public static  void IsModified(Dictionary<string, object> originalValues, Dictionary<string, string> modifiedValues, int param, int accessedEmp, SqlConnection connection, SqlTransaction transaction)
         {
             //딕셔너리를 받아온다
@@ -219,7 +232,7 @@ namespace BRMS
             cDatabaseConnect dbconn = new cDatabaseConnect();
             string query = null ;
   
-            switch(type.ToString().Substring(0,1))
+            switch(type.ToString().Substring(0,2))
             {
                 case "1":
                     query = "INSERT INTO productlog (pdtlog_type,pdtlog_before,pdtlog_after,pdtlog_param,pdtlog_emp,pdtlog_date)";
@@ -346,11 +359,11 @@ namespace BRMS
                 return resultString;
             }
             cDatabaseConnect dbconn = new cDatabaseConnect();
-            string query = $"SELECT pur_sup FROM purchase FROM pur_code = {code}";
+            string query = $"SELECT pur_sup FROM purchase WHERE pur_code = {code}";
             object resultObj = new object();
             dbconn.sqlScalaQuery(query, out resultObj);
             supplierCode = Convert.ToInt32(resultObj);
-            GetSupplierInfo(code, out resultString);
+            GetSupplierInfo(supplierCode, out resultString);
             return resultString;
         }
         public static string GetPurOrderSupplierInfo(int code, out string resultString)
@@ -362,11 +375,11 @@ namespace BRMS
                 return resultString;
             }
             cDatabaseConnect dbconn = new cDatabaseConnect();
-            string query = $"SELECT pord_sup FROM purorder FROM pord_code = {code}";
+            string query = $"SELECT pord_sup FROM purorder WHERE pord_code = {code}";
             object resultObj = new object();
             dbconn.sqlScalaQuery(query, out resultObj);
             supplierCode = Convert.ToInt32(resultObj);
-            GetSupplierInfo(code, out resultString);
+            GetSupplierInfo(supplierCode, out resultString);
             return resultString;
         }
         public static string GetPaymentSupplierInfo(int code, out string resultString)
@@ -378,11 +391,11 @@ namespace BRMS
                 return resultString;
             }
             cDatabaseConnect dbconn = new cDatabaseConnect();
-            string query = $"SELECT pay_sup FROM payment FROM pay_code = {code}";
+            string query = $"SELECT pay_sup FROM payment WHERE pay_code = {code}";
             object resultObj = new object();
             dbconn.sqlScalaQuery(query, out resultObj);
             supplierCode = Convert.ToInt32(resultObj);
-            GetSupplierInfo(code, out resultString);
+            GetSupplierInfo(supplierCode, out resultString);
             return resultString;
         }
         public static string GetSupplierInfo(int code, out string resultString)
@@ -428,6 +441,24 @@ namespace BRMS
             dbconn.sqlScalaQuery(query, out resultObj);
             string name = resultObj.ToString().Trim();
             resultString = $"{name}({code})";
+            return resultString;
+        }
+
+        public static string GetCategoryInof(int code, out string resultString)
+        {
+            if (code == 0)
+            {
+                resultString = "";
+                return resultString;
+            }
+            cDatabaseConnect dbconn = new cDatabaseConnect();
+            string query = $"SELECT cat_top, cat_mid, cat_bot, cat_name_kr, cat_name_en FROM category WHERE cat_code = {code}";
+            DataTable resultData = new DataTable();
+            dbconn.SqlReaderQuery(query, resultData);
+            DataRow dataRow = resultData.Rows[0];
+            string catCode = $"{dataRow["cat_top"]}_{dataRow["cat_mid"]}_{dataRow["cat_bot"]}";
+            string name = $"{dataRow["cat_name_kr"]} | {dataRow["cat_name_en"]}";
+            resultString = $"{name}({catCode})";
             return resultString;
         }
     }

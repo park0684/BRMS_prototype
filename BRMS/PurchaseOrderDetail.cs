@@ -307,9 +307,13 @@ namespace BRMS
             int orderStatus = Convert.ToInt32(dataRow["pord_status"]);
             lblOrderStatus.Text = cStatusCode.GetPurchaseOrderStatus(orderStatus);
             isNewEntry = false;
-            OrigenaDate();
+            RegisterOriginalData();
         }
-        private void OrigenaDate()
+        /// <summary>
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용 
+        /// </summary>
+        private void RegisterOriginalData()
         {
             originalValues["@pordDate"] = OrderDate;
             originalValues["@pordSup"] = supplierCode;
@@ -318,7 +322,6 @@ namespace BRMS
             originalValues["@purType"] = purOrdType;
             originalValues["@pordNote"] = tBoxPurOrderNote.Text;
             originalValues["@pordStatus"] = purOrderStatus;
-
         }
         /// <summary>
         /// 데이터그리드에 제품번호를 입력시 제품번호로 검색

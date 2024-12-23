@@ -41,7 +41,7 @@ namespace BRMS
             dgrLog.Dgr.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgrLog.FormatAsDateTime("logDate");
             dgrLog.FormatAsStringLeft("logCustName", "logType", "logBefore", "logAfter");
-            dgrLog.FormatAsStringCenter("logEmpName", "logSupCode", "logEmp", "logParam");
+            dgrLog.FormatAsStringCenter("logEmpName", "logEmp", "logParam");
 
         }
 

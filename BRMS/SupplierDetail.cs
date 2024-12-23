@@ -13,29 +13,22 @@ namespace BRMS
     public partial class SupplierDetail : Form
     {
         cDatabaseConnect dbconn = new cDatabaseConnect();
-        int workType = 0;// 0 == 신규 등록 , 1 == 기존 공급사 조회
         int supplierStatus = 1;
+        bool isNewEntry = false;
         public event Action<int> refresh;
         Dictionary<string, object> originalValues = new Dictionary<string, object>();
         Dictionary<int, string> accessPermission = new Dictionary<int, string>();
-        int accessedEmp = 0;
+        int accessedEmp = 1;
         int suppliercode = 0;
         public SupplierDetail()
         {
             InitializeComponent();
-            //MaximizeBox = false;
-            //MinimizeBox = false;
-            ControlBox = false;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            ComboBoxSetting();
+            cUIManager.ApplyFormStyle(this);
+            InitailizeComboBox();
         }
 
-        private void ComboBoxSetting()
+        private void InitailizeComboBox()
         {
-            //cBoxPayType.Items.Add("현금");
-            //cBoxPayType.Items.Add("계좌이체");
-            //cBoxPayType.Items.Add("신용카드");
-            //cBoxPayType.Items.Add("어음");
             foreach(var status in cStatusCode.SupplierPayment)
             {
                 cBoxPayType.Items.Add(new KeyValuePair<int, string>(status.Key, status.Value));
@@ -45,57 +38,72 @@ namespace BRMS
             cBoxPayType.DropDownStyle = ComboBoxStyle.DropDownList;
             cBoxPayType.SelectedIndex = 0;
         }
-        public void GetSupplierInfo(int supCode)
+        public void GetSupplierCode(int supCode)
         {
-            string query = null;
-            if (supCode == 0)
+            if(supCode == 0)
             {
-                query = "SELECT MAX(sup_code) + 1 FROM supplier";
-                Object resultObj = new object();
-                dbconn.sqlScalaQuery(query, out resultObj);
-                lblSupplierCode.Text = resultObj.ToString();
+                isNewEntry = true;
+            }
+            
+            if (isNewEntry == true)
+            {
+                AddSupplier();
             }
             else
             {
-                DataTable resultData = new DataTable();
-                //query = "SELECT sup_name, sup_bzno,sup_ceoname,sup_tel,sup_cel,sup_fax,sup_email,sup_url,sup_memo FROM supplier WHERE sup_code = " + supCode;
-                query = "SELECT sup_code, sup_name, sup_bzno, sup_bztype, sup_industry, sup_ceoname, sup_tel, sup_cel, sup_fax, sup_email, sup_url, sup_memo, sup_bank, sup_account, " +
-                    "sup_accname, sup_status, sup_idate, sup_address, sup_paytype FROM supplier WHERE sup_code = " + supCode;
-                dbconn.SqlReaderQuery(query, resultData);
-                workType = 1;
-                suppliercode = supCode;
-                DataRow dataRow = resultData.Rows[0];
-                supplierStatus = Convert.ToInt32(dataRow["sup_status"]);
-                lblSupplierCode.Text = supCode.ToString();
-                tBoxSupplierBzName.Text = dataRow["sup_name"].ToString();
-                tBoxSupplierBzNum.Text = dataRow["sup_bzno"].ToString();
-                tBoxBzType.Text = dataRow["sup_bztype"].ToString();
-                tBoxIndustry.Text = dataRow["sup_industry"].ToString();
-                tBoxSupplierCeo.Text = dataRow["sup_ceoname"].ToString();
-                tBoxTelephon.Text = dataRow["sup_tel"].ToString();
-                tBoxCellphon.Text = dataRow["sup_cel"].ToString();
-                tBoxFax.Text = dataRow["sup_fax"].ToString();
-                tBoxEmail.Text = dataRow["sup_email"].ToString();
-                tBoxUrl.Text = dataRow["sup_url"].ToString();
-                tBoxMemo.Text = dataRow["sup_memo"].ToString();
-                tBoxBank.Text = dataRow["sup_bank"].ToString();
-                tBoxAccount.Text = dataRow["sup_account"].ToString();
-                tBoxDepasitor.Text = dataRow["sup_accname"].ToString();
-                if(dataRow["sup_status"].ToString() == "1")
-                {
-                    checkBoxStatus.Checked = true;
-                }
-                else
-                {
-                    checkBoxStatus.Checked = false;
-                }
-                tBoxAddress.Text = dataRow["sup_address"].ToString();
-                cBoxPayType.SelectedIndex = Convert.ToInt32(dataRow["sup_paytype"]);
-
-                OrigenaDate();
+                LoadSupplierInfo(supCode);
             }
         }
-        private void OrigenaDate()
+        private void AddSupplier()
+        {
+            string query = "SELECT MAX(sup_code) + 1 FROM supplier";
+            Object resultObj = new object();
+            dbconn.sqlScalaQuery(query, out resultObj);
+            lblSupplierCode.Text = resultObj.ToString();
+        }
+        private void LoadSupplierInfo(int supplierCode)
+        {
+            DataTable resultData = new DataTable();
+            //query = "SELECT sup_name, sup_bzno,sup_ceoname,sup_tel,sup_cel,sup_fax,sup_email,sup_url,sup_memo FROM supplier WHERE sup_code = " + supCode;
+            string query = "SELECT sup_code, sup_name, sup_bzno, sup_bztype, sup_industry, sup_ceoname, sup_tel, sup_cel, sup_fax, sup_email, sup_url, sup_memo, sup_bank, sup_account, " +
+                $"sup_accname, sup_status, sup_idate, sup_address, sup_paytype FROM supplier WHERE sup_code = {supplierCode}";
+            dbconn.SqlReaderQuery(query, resultData);
+            suppliercode = supplierCode;
+            DataRow dataRow = resultData.Rows[0];
+            supplierStatus = Convert.ToInt32(dataRow["sup_status"]);
+            lblSupplierCode.Text = supplierCode.ToString();
+            tBoxSupplierBzName.Text = dataRow["sup_name"].ToString();
+            tBoxSupplierBzNum.Text = dataRow["sup_bzno"].ToString();
+            tBoxBzType.Text = dataRow["sup_bztype"].ToString();
+            tBoxIndustry.Text = dataRow["sup_industry"].ToString();
+            tBoxSupplierCeo.Text = dataRow["sup_ceoname"].ToString();
+            tBoxTelephon.Text = dataRow["sup_tel"].ToString();
+            tBoxCellphon.Text = dataRow["sup_cel"].ToString();
+            tBoxFax.Text = dataRow["sup_fax"].ToString();
+            tBoxEmail.Text = dataRow["sup_email"].ToString();
+            tBoxUrl.Text = dataRow["sup_url"].ToString();
+            tBoxMemo.Text = dataRow["sup_memo"].ToString();
+            tBoxBank.Text = dataRow["sup_bank"].ToString();
+            tBoxAccount.Text = dataRow["sup_account"].ToString();
+            tBoxDepasitor.Text = dataRow["sup_accname"].ToString();
+            if (dataRow["sup_status"].ToString() == "1")
+            {
+                checkBoxStatus.Checked = true;
+            }
+            else
+            {
+                checkBoxStatus.Checked = false;
+            }
+            tBoxAddress.Text = dataRow["sup_address"].ToString();
+            cBoxPayType.SelectedIndex = Convert.ToInt32(dataRow["sup_paytype"]);
+
+            RegisterOriginalData();
+        }
+        /// <summary>
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용
+        /// </summary>
+        private void RegisterOriginalData()
         {
             
             originalValues["@supName"] = tBoxSupplierBzName.Text;
@@ -116,7 +124,7 @@ namespace BRMS
             originalValues["@supAddress"] = tBoxAddress.Text;
             originalValues["@supPayType"] = cBoxPayType.SelectedIndex;
         }
-        private void SupplierAdd(SqlConnection connection, SqlTransaction transaction)
+        private void InsertSupplier(SqlConnection connection, SqlTransaction transaction)
         {
             string query = "SELECT ISNULL(MAX(sup_code),0) + 1 FROM supplier ";
             object resultObj = new object();
@@ -202,11 +210,11 @@ namespace BRMS
             try
             {
                 dbconn.NonQuery("BEGIN TRAN", connection, transaction);
-                if (workType == 0)
+                if (isNewEntry == true)
                 {
-                    SupplierAdd(connection, transaction);
+                    InsertSupplier(connection, transaction);
                 }
-                else if (workType == 1)
+                else
                 {
                     SupplierModfy(connection, transaction);
                 }

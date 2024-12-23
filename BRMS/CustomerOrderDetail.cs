@@ -382,6 +382,15 @@ namespace BRMS
                 bntSaleRegist.Text = "판매 조회";
                 bntSaleRegist.BackColor = cUIManager.Color.Green;
             }
+            RegisterOriginalData();
+        }
+        /// <summary>
+        /// 조회된 원본 데이터 originalValues 딕셔너리에 등록
+        /// 수정시 원본과 수정본을 비교하여 로그 생성시 before 데이터로 사용
+        /// </summary>
+        private void RegisterOriginalData()
+        {
+
         }
         private void GridFill(DataTable dataTable)// 오늘은 요기까지
         {

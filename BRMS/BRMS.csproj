@@ -81,6 +81,7 @@
       <DependentUpon>CategoryTreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="cCryptor.cs" />
+    <Compile Include="cDataHandler.cs" />
     <Compile Include="cExport.cs" />
     <Compile Include="cLog.cs" />
     <Compile Include="cStatusCode.cs" />

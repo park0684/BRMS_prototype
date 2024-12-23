@@ -45,17 +45,12 @@ namespace BRMS
             Dgr.AllowUserToResizeRows = false;
             Dgr.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             Dgr.DefaultCellStyle.Font = new Font("맑은 고딕", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            //Dgr.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical;
-            //Dgr.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             Dgr.Columns.Add("No", "No");
             Dgr.Columns["No"].Width = 50;
             Dgr.Columns["No"].ReadOnly = true;
             Dgr.Columns["No"].DefaultCellStyle.BackColor = Color.LightGoldenrodYellow;
             Dgr.Columns["No"].DefaultCellStyle.SelectionBackColor = Color.LightGoldenrodYellow;
             FormatAsStringCenter("No");
-            //Dgr.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            //Dgr.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGoldenrodYellow;
-            //Dgr.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.LightGoldenrodYellow;
         }
         private void DataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {

@@ -152,6 +152,10 @@ namespace BRMS
                     case 926:// 발주 등록
                         cLog.GetPurOrderSupplierInfo(paramCode, out param);
                         break;
+                    case 927:// 분류 등록
+                    case 928:// 분류 수정
+                        cLog.GetCategoryInof(paramCode, out param);
+                        break;
                 }
                 string logDate = Convert.ToDateTime(row["acslog_date"]).ToString("yyyy-MM-dd HH:mm");
                 string logType = "";

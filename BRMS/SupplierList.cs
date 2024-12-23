@@ -14,7 +14,7 @@ namespace BRMS
         cDatabaseConnect dbconn = new cDatabaseConnect();
         cDataGridDefaultSet DgrSupplierList = new cDataGridDefaultSet();
         int refresh = 0;
-        int accessedEmp = 0;
+        int accessedEmp = 1;
         public SupplierList()
         {
             InitializeComponent();
@@ -81,7 +81,7 @@ namespace BRMS
         {
             SupplierDetail supplierDetail = new SupplierDetail();
             supplierDetail.StartPosition = FormStartPosition.CenterParent;
-            supplierDetail.GetSupplierInfo(supplierCode);
+            supplierDetail.GetSupplierCode(supplierCode);
             cLog.InsertEmpAccessLogNotConnect("@supplierSearch", accessedEmp, supplierCode);
             supplierDetail.refresh += (refreshCode) => refresh = refreshCode;
             supplierDetail.ShowDialog();
